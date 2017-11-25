@@ -2,6 +2,7 @@
 #include <linux/kernel.h>
 
 #include "thread.h"
+#include "network.h"
 
 
 //module info
@@ -9,17 +10,20 @@ MODULE_DESCRIPTION("The fastest echo server in kernel module");
 MODULE_AUTHOR("lrf141");
 MODULE_LICENSE("MIT");
 
-
 static int fastecho_init_module(void){
 
         printk("Fastest Echo Server Start!!");
+
+        //make socket
+        //int res;
+        
 
         //make kernel thread
         task = kthread_create(kthread_cb, NULL, "lrf141:fastecho");
         
         printk("[%s] wake up as kthread\n", task->comm);
 
-        //launch task
+        //launch task as kernel process
         wake_up_process(task);
         
         return 0;
