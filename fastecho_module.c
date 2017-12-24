@@ -6,47 +6,37 @@
 
 
 //module info
-MODULE_DESCRIPTION("The fastest echo server in kernel module");
+MODULE_DESCRIPTION("The fastest echo server_sock in kernel module");
 MODULE_AUTHOR("lrf141");
 MODULE_LICENSE("MIT");
 
 static int fastecho_init_module(void){
 
-        printk("Fastest Echo Server Start!!");
+  printk("Fastest Echo Server Start!!");
 
-        //make socket
-        int res;
-        res = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &server);
-        if(res < 0)
-          return res;
-
-        server->sk->sk_reuse = 1;
-        
-        socket_in.sin_family = AF_INET;
-        socket_in.sin_addr.s_addr = htonl(INADDR_ANY);
-        socket_in.sin_port = htons(DEFAULT_PORT);
-
-        res = server->ops->bind(server, (struct sockaddr *)&socket_in, sizeof(socket_in));
-
-        
-
-        //make kernel thread
-        task = kthread_create(kthread_cb, NULL, "lrf141:fastecho");
-        
-        printk("[%s] wake up as kthread\n", task->comm);
-
-        //launch task as kernel process
-        wake_up_process(task);
-        
-        return 0;
+  kernel_ntw = kmalloc(sizeof(struct kernel_tcp),GFP_KERNEL);
+  start(); 
+  return 0;
 }
 
 
 static void fastecho_cleanup_module(void){
 
-        printk("Fastest Echo Server is unloaded!");
-        printk("[%s] stop kthread\n", task->comm);
-        kthread_stop(task);
+
+  if(kernel_ntw->thread != NULL){
+    kthread_stop(kernel_ntw->thread);
+    kthread_stop(kernel_ntw->accept);
+  }
+
+  if(kernel_ntw->server_sock != NULL){
+    sock_release(kernel_ntw->server_sock);
+    kernel_ntw->server_sock = NULL;
+  }
+
+  kfree(kernel_ntw);
+  kernel_ntw = NULL;
+
+  printk("Fastest Echo Server is unloaded!");
 
 }
 
