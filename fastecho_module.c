@@ -15,7 +15,19 @@ static int fastecho_init_module(void){
         printk("Fastest Echo Server Start!!");
 
         //make socket
-        //int res;
+        int res;
+        res = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &server);
+        if(res < 0)
+          return res;
+
+        server->sk->sk_reuse = 1;
+        
+        socket_in.sin_family = AF_INET;
+        socket_in.sin_addr.s_addr = htonl(INADDR_ANY);
+        socket_in.sin_port = htons(DEFAULT_PORT);
+
+        res = server->ops->bind(server, (struct sockaddr *)&socket_in, sizeof(socket_in));
+
         
 
         //make kernel thread
