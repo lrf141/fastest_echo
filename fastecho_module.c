@@ -1,8 +1,8 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 
-#include "thread.h"
-#include "network.h"
+//#include "network.h"
+#include "test_network.h"
 
 
 //module info
@@ -14,8 +14,9 @@ static int fastecho_init_module(void){
 
   printk("Fastest Echo Server Start!!");
 
-  kernel_ntw = kmalloc(sizeof(struct kernel_tcp),GFP_KERNEL);
-  start(); 
+  //kernel_ntw = kmalloc(sizeof(struct kernel_tcp),GFP_KERNEL);
+  //start(); 
+  run();
   return 0;
 }
 
@@ -23,6 +24,7 @@ static int fastecho_init_module(void){
 static void fastecho_cleanup_module(void){
 
 
+  /*
   if(kernel_ntw->thread != NULL){
     kthread_stop(kernel_ntw->thread);
     kthread_stop(kernel_ntw->accept);
@@ -35,6 +37,7 @@ static void fastecho_cleanup_module(void){
 
   kfree(kernel_ntw);
   kernel_ntw = NULL;
+  */
 
   printk("Fastest Echo Server is unloaded!");
 
