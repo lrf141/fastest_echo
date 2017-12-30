@@ -6,6 +6,8 @@
 #include <linux/net.h>
 #include <linux/socket.h>
 #include <linux/in.h>
+#include <linux/slab.h>
+
 
 struct socket *sock0;
 struct socket *sock;
@@ -26,7 +28,7 @@ int run(){
   //sock0->sk->sk_reuse = 1;
 
   sin.sin_addr.s_addr = htonl(INADDR_ANY);
-  sin.sin_family = AF_INET;
+  sin.sin_family = PF_INET;
   sin.sin_port = htons(8888);
 
   error = sock0->ops->bind(sock0, (struct sockaddr *)&sin, sizeof(sin));
@@ -41,7 +43,8 @@ int run(){
     return -1;
   }
 
-  error = sock_create(AF_INET, SOCK_STREAM, IPPROTO_TCP, &sock);
+  sock = (struct socket *)kmalloc(sizeof(struct socket), GFP_KERNEL);
+  error = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &sock);
   if(error < 0){
     printk("csock create error\n");
     return -1;
