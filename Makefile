@@ -1,9 +1,10 @@
+CFILES = fastecho_module.c network.c
 KERNEL_DIR = /lib/modules/$(shell uname -r)/build
 BUILD_DIR := $(shell pwd)
 VERBOSE   := 0
 
 obj-m := fastecho.o
-fastecho-objs := fastecho_module.o
+fastecho-objs := $(CFILES:.c=.o)
 
 
 all:
