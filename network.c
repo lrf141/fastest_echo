@@ -16,13 +16,13 @@ int send_str(struct socket *sock, char *buf, int len){
   msg.msg_control = NULL;
   msg.msg_controllen = 0;
   msg.msg_flags = 0;
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
+  //msg.msg_iov = &iov;
+  //msg.msg_iovlen = 1;
   msg.msg_name = 0;
   msg.msg_namelen = 0;
 
   printk("send str \n");
-  size = sock_sendmsg(sock, &msg, len);
+  size = sock_sendmsg(sock, &msg);
   printk("send str done\n");
   return size;
 }
@@ -48,10 +48,10 @@ int receive(struct socket *sock, unsigned char *buf, int len){
   msg.msg_flags = 0;
   msg.msg_name = 0;
   msg.msg_namelen = 0;
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
+  //msg.msg_iov = &iov;
+  //msg.msg_iovlen = 1;
 
-  size = sock_recvmsg(sock, &msg, len, msg.msg_flags);
+  size = sock_recvmsg(sock, &msg, msg.msg_flags);
 
   printk("echo server received msg\n");
   printk("result: %s\n", buf);
