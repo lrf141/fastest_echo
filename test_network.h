@@ -7,7 +7,14 @@
 #include <linux/socket.h>
 #include <linux/in.h>
 #include <linux/slab.h>
+#include <linux/wait.h>
+#include <linux/kthread.h>
+#include <linux/slab.h>
 
+#include <net/sock.h>
+#include <net/tcp.h>
+#include <net/inet_connection_sock.h>
+#include <net/request_sock.h>
 
 struct socket *sock0;
 struct socket *sock;
@@ -50,7 +57,22 @@ int run(){
     return -1;
   }
 
+  //add queue
+  DECLARE_WAITQUEUE(wait, current);
+  struct inet_connection_sock *isock = inet_csk(sock->sk);
+
   while(1){
+
+
+    if(reqsk_queue_empty(&isock->icsk_accept_queue)){
+      add_wait_queue(&sock0->sk->sk_wq->wait, &wait);
+      __set_current_state(TASK_INTERRUPTIBLE);
+      schedule_timeout(HZ);
+      __set_current_state(TASK_RUNNING);
+      remove_wait_queue(&sock0->sk->sk_wq->wait, &wait);
+      continue;
+    }
+
     error = sock0->ops->accept(sock0, sock, O_NONBLOCK);
     
     if(error < 0){
