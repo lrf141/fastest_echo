@@ -1,4 +1,4 @@
-CFILES = fastecho_module.c network.c test_network.c
+CFILES = fastecho_module.c test_network.c
 KERNEL_DIR = /lib/modules/$(shell uname -r)/build
 BUILD_DIR := $(shell pwd)
 VERBOSE   := 0

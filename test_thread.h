@@ -5,8 +5,7 @@
 #include <linux/kernel.h>
 #include <linux/kthread.h>
 #include <linux/sched.h>
+#include <linux/slab.h>
 
-struct task_struct *task;
-extern static int accept_thread(void);
 
 #endif

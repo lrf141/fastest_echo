@@ -16,7 +16,9 @@
 #include <net/inet_connection_sock.h>
 #include <net/request_sock.h>
 
+#define DEFAULT_PORT 8888
 
-extern int run(void);
+extern int server_listen(void);
+extern int server_accept(void);
 
 #endif
