@@ -45,6 +45,7 @@ static void fastecho_cleanup_module(void){
   */
   kthread_stop(thread);
 
+
   printk("Fastest Echo Server is unloaded!");
 
 }

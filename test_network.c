@@ -191,9 +191,9 @@ int echo_receive(unsigned char *buf, int size, unsigned long flags){
   vec.iov_len = size;
   vec.iov_base = buf;
 
-  if(!skb_queue_empty(&sock->sk->sk_receive_queue)){
+  if(!skb_queue_empty(&accept_sock->sk->sk_receive_queue)){
     printk("receive queue empty yes or no: %s\n", 
-        skb_queue_empty(&sock->sk->sk_receive_queue)?"YES":"NO");
+        skb_queue_empty(&accept_sock->sk->sk_receive_queue)?"YES":"NO");
   }
 
   len = kernel_recvmsg(sock, &msg, &vec, size, size, flags);
