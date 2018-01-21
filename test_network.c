@@ -20,7 +20,7 @@ struct task_struct *accept_thread;
 
 int server_listen(void);
 int server_accept(void);
-int echo_receive(unsigned char *, int);
+int echo_receive(unsigned char *, int, unsigned long);
 
 
 int server_listen(void){
@@ -156,8 +156,7 @@ int server_accept(void){
     memset(&buf, 0, 1024);
     printk("start get msg\n");
 
-    while(echo_receive(buf,1024)){
-    }
+    echo_receive(buf, 1024, MSG_DONTWAIT);
 
     if(signal_pending(current))
       break;
@@ -170,8 +169,34 @@ release:
   return 0;
 }
 
-int echo_receive(unsigned char *buf, int len){
+int echo_receive(unsigned char *buf, int size, unsigned long flags){
+  
   printk("echo receive accept_sock is: %d, %d\n", (int)accept_sock, (int)sock);
   
-  return 0;
+  if(sock == NULL){
+    printk(KERN_ERR "echo server receive sock is NULL\n");
+    return -1;
+  }
+
+  struct msghdr msg;
+  struct kvec vec;
+  int len;
+
+  msg.msg_name = 0;
+  msg.msg_namelen = 0;
+  msg.msg_control = NULL;
+  msg.msg_controllen = 0;
+  msg.msg_flags = flags;
+
+  vec.iov_len = size;
+  vec.iov_base = buf;
+
+  if(!skb_queue_empty(&sock->sk->sk_receive_queue)){
+    printk("receive queue empty yes or no: %s\n", 
+        skb_queue_empty(&sock->sk->sk_receive_queue)?"YES":"NO");
+  }
+
+  len = kernel_recvmsg(sock, &msg, &vec, size, size, flags);
+  printk("recv: %s\n", buf);
+  return len;
 }
