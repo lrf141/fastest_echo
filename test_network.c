@@ -33,7 +33,7 @@ int server_listen(void){
   allow_signal(SIGTERM);
 
   //socket create
-  error = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &sock);
+  error = sock_create(AF_INET, SOCK_STREAM, IPPROTO_TCP, &sock);
   if(error < 0){
     printk(KERN_ERR "server socket create error:%d\n", error);
     return error;
