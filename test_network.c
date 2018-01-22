@@ -164,6 +164,7 @@ int server_accept(void){
   }
 release:
   sock_release(accept_sock);
+  sock_release(sock);
 
 
   return 0;
@@ -196,7 +197,7 @@ int echo_receive(unsigned char *buf, int size, unsigned long flags){
         skb_queue_empty(&accept_sock->sk->sk_receive_queue)?"YES":"NO");
   }
 
-  len = kernel_recvmsg(sock, &msg, &vec, size, size, flags);
+  len = kernel_recvmsg(accept_sock, &msg, &vec, size, size, flags);
   printk("recv: %s\n", buf);
   return len;
 }
