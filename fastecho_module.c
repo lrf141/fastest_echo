@@ -36,7 +36,7 @@ static void close_listen(struct socket *);
 
 static int fastecho_init_module(void){
 
-  printk("Fastest Echo Server Start!!");
+  printk(MODULE_NAME ": module loaded!!\n");
 
   return 0;
 }
@@ -45,7 +45,8 @@ static int fastecho_init_module(void){
 static void fastecho_cleanup_module(void){
 
 
-  printk("Fastest Echo Server is unloaded!");
+  close_listen(sock);
+  printk(MODULE_NAME ":module unloaded!\n");
 
 }
 
@@ -63,6 +64,7 @@ static int open_listen(struct socket **result){
     printk(KERN_ERR MODULE_NAME ": socket create error = %d\n", error);
     return error;
   }
+  printk(MODULE_NAME ": socket create ok....\n");
 
   
   //set tcp_nodelay
@@ -74,6 +76,7 @@ static int open_listen(struct socket **result){
     sock_release(sock);
     return error;
   }
+  printk(MODULE_NAME ": setsockopt ok....\n");
 
   
   //setting sockaddr_in
@@ -90,15 +93,17 @@ static int open_listen(struct socket **result){
     sock_release(sock);
     return error;
   }
+  printk(MODULE_NAME ": socket bind ok....\n");
 
 
   //listen
-  error = kenel_listen(sock, DEFAULT_BACKLOG);
+  error = kernel_listen(sock, DEFAULT_BACKLOG);
   if(error < 0){
     printk(KERN_ERR MODULE_NAME ": socket bind error = %d\n", error);
     sock_release(sock);
     return error;
   }
+  printk(MODULE_NAME ": socket listen ok....\n");
 
   
   *result = sock;
