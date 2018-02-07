@@ -47,10 +47,12 @@ static int fastecho_init_module(void){
     printk(KERN_ERR MODULE_NAME ": listen socket open error\n");
     return error;
   }
-
-
-
-
+  
+  echo_server = kthread_run(echo_server_daemon, NULL, MODULE_NAME);
+  if(IS_ERR(echo_server)){
+    printk(KERN_ERR MODULE_NAME ": cannot start server daemon\n");
+    close_listen(listen_sock);
+  }
 
   return 0;
 }
@@ -58,7 +60,7 @@ static int fastecho_init_module(void){
 
 static void fastecho_cleanup_module(void){
 
-
+  kthread_stop(echo_server);
   close_listen(listen_sock);
   printk(MODULE_NAME ":module unloaded!\n");
 

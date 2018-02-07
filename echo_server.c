@@ -18,8 +18,6 @@ static int get_request(struct socket *sock, char *buf, size_t size){
   struct msghdr msg;
   msg.msg_name = 0;
   msg.msg_namelen = 0;
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
   msg.msg_control = NULL;
   msg.msg_controllen = 0;
   msg.msg_flags = 0;
@@ -27,8 +25,10 @@ static int get_request(struct socket *sock, char *buf, size_t size){
   oldfs = get_fs();
   set_fs(KERNEL_DS);
 
+
+  printk(MODULE_NAME ": start get response\n");
   //get msg
-  int length = sock_recvmsg(sock, &msg, size, msg.msg_flags);
+  int length = sock_recvmsg(sock, &msg, size);
 
   set_fs(oldfs);
 
@@ -44,8 +44,6 @@ static int send_request(struct socket *sock, char *buf, size_t size){
   struct msghdr msg;
   msg.msg_name = 0;
   msg.msg_namelen = 0;
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
   msg.msg_control = NULL;
   msg.msg_controllen = 0;
   msg.msg_flags = 0;
@@ -61,7 +59,7 @@ static int send_request(struct socket *sock, char *buf, size_t size){
     iov.iov_base = (void *)((char *)buf + done);
     iov.iov_len = size - done;
     
-    length = sock_sendmsg(sock, &msg, iov.iov_len);
+    length = sock_sendmsg(sock, &msg);
     if(length < 0){
       printk(KERN_ERR MODULE_NAME ": write error = %d\n", length);
       break;
