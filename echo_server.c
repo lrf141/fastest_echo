@@ -5,6 +5,35 @@
 
 #define BUF_SIZE 4096
 
+static int get_request(struct socket *sock, char *buf, size_t size){
+
+  mm_segment_t oldfs;
+  
+  //iov setting
+  struct iovec iov;
+  iov.iov_base = (void *)buf;
+  iov.iov_len = size;
+
+  //msghdr setting
+  struct msghdr msg;
+  msg.msg_name = 0;
+  msg.msg_namelen = 0;
+  msg.msg_iov = &iov;
+  msg.msg_iovlen = 1;
+  msg.msg_controllen = 0;
+  msg.msg_flags = 0;
+
+  oldfs = get_fs();
+  set_fs(KERNEL_DS);
+
+  //get msg
+  int length = sock_recvmsg(sock, &msg, size, msg.msg_flags);
+
+  set_fs(oldfs);
+
+  return length;
+}
+
 static int echo_server_worker(void *arg){
 
   struct socket *sock;
@@ -19,6 +48,9 @@ static int echo_server_worker(void *arg){
     printk(KERN_ERR MODULE_NAME ": kmalloc error....\n");
     return -1;
   }
+
+
+  kfree(buf);
   
   return 0;
 }
