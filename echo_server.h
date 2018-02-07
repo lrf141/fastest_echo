@@ -4,8 +4,8 @@
 #include <linux/types.h>
 #include <net/sock.h>
 
-struct echo_server_status{
-  struct socket *accept_sock;
+struct echo_server_param{
+  struct socket *listen_sock;
 };
 
 extern int echo_server_daemon(void *);

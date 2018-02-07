@@ -28,7 +28,7 @@ static ushort backlog = DEFAULT_BACKLOG;
 module_param(port, ushort, S_IRUGO);
 module_param(backlog, ushort, S_IRUGO);
 
-
+struct echo_server_param param;
 struct socket *listen_sock;
 struct task_struct *echo_server;
 
@@ -48,7 +48,9 @@ static int fastecho_init_module(void){
     return error;
   }
   
-  echo_server = kthread_run(echo_server_daemon, NULL, MODULE_NAME);
+  param.listen_sock = listen_sock;
+
+  echo_server = kthread_run(echo_server_daemon, &param, MODULE_NAME);
   if(IS_ERR(echo_server)){
     printk(KERN_ERR MODULE_NAME ": cannot start server daemon\n");
     close_listen(listen_sock);
@@ -60,6 +62,7 @@ static int fastecho_init_module(void){
 
 static void fastecho_cleanup_module(void){
 
+  send_sig(SIGTERM, echo_server, 1);
   kthread_stop(echo_server);
   close_listen(listen_sock);
   printk(MODULE_NAME ":module unloaded!\n");

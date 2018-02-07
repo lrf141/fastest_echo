@@ -116,20 +116,20 @@ static int echo_server_worker(void *arg){
 
 int echo_server_daemon(void *arg){
 
-  struct echo_server_status *status;
+  struct echo_server_param *param;
   struct socket *sock;
   struct task_struct *thread;
   int error;
 
   //init
-  status = (struct echo_server_status *)arg;
+  param = (struct echo_server_status *)arg;
   allow_signal(SIGKILL);
   allow_signal(SIGTERM);
 
   while(!kthread_should_stop()){
     
     //using BLOCKING I/O
-    error = kernel_accept(status->accept_sock, &sock, 0);
+    error = kernel_accept(param->listen_sock, &sock, 0);
     if(error < 0){
       if(signal_pending(current))
         break;
