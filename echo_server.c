@@ -1,7 +1,7 @@
 #include <linux/kernel.h>
 #include <linux/kthread.h>
 #include <linux/tcp.h>
-#include "fastestecho.h"
+#include "fastecho.h"
 
 #define BUF_SIZE 4096
 
@@ -9,7 +9,6 @@ static int echo_server_worker(void *arg){
 
   struct socket *sock;
   unsigned char *buf;
-  int ret;
 
   sock = (struct socket *)arg;
   allow_signal(SIGKILL);
@@ -24,12 +23,14 @@ static int echo_server_worker(void *arg){
   return 0;
 }
 
+
+
 int echo_server_daemon(void *arg){
 
   struct echo_server_status *status;
   struct socket *sock;
   struct task_struct *thread;
-  int err;
+  int error;
 
   //init
   status = (struct echo_server_status *)arg;
@@ -39,8 +40,8 @@ int echo_server_daemon(void *arg){
   while(!kthread_should_stop()){
     
     //using BLOCKING I/O
-    err = kernel_accept(status->accept_sock, &sock, 0);
-    if(err < 0){
+    error = kernel_accept(status->accept_sock, &sock, 0);
+    if(error < 0){
       if(signal_pending(current))
         break;
       printk(KERN_ERR MODULE_NAME ": socket accept error = %d\n", error);

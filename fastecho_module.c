@@ -23,11 +23,13 @@ MODULE_AUTHOR("lrf141");
 MODULE_LICENSE("MIT");
 
 //set module param
-module_param(DEFAULT_PORT, int, S_IRUGO);
-module_param(DEFAULT_BACKLOG, int, S_IRUGO);
+static ushort port = DEFAULT_PORT;
+static ushort backlog = DEFAULT_BACKLOG;
+module_param(port, ushort, S_IRUGO);
+module_param(backlog, ushort, S_IRUGO);
 
 
-struct socket *sock;
+struct socket *listen_sock;
 struct task_struct *echo_server;
 
 
@@ -36,7 +38,19 @@ static void close_listen(struct socket *);
 
 static int fastecho_init_module(void){
 
+  int error;
+
   printk(MODULE_NAME ": module loaded!!\n");
+
+  error = open_listen(&listen_sock);
+  if(error < 0){
+    printk(KERN_ERR MODULE_NAME ": listen socket open error\n");
+    return error;
+  }
+
+
+
+
 
   return 0;
 }
@@ -45,7 +59,7 @@ static int fastecho_init_module(void){
 static void fastecho_cleanup_module(void){
 
 
-  close_listen(sock);
+  close_listen(listen_sock);
   printk(MODULE_NAME ":module unloaded!\n");
 
 }
@@ -59,7 +73,7 @@ static int open_listen(struct socket **result){
 
 
   //using IPv4, TCP/IP
-  error = sock_create_kern(PF_INET, SOCK_STREAM, IPPROTO_TCP, &sock);
+  error = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &sock);
   if(error < 0){
     printk(KERN_ERR MODULE_NAME ": socket create error = %d\n", error);
     return error;
@@ -71,6 +85,7 @@ static int open_listen(struct socket **result){
   error = kernel_setsockopt(sock, 
                             SOL_TCP, TCP_NODELAY,
                             (char *)&opt, sizeof(opt));
+  
   if(error < 0){
     printk(KERN_ERR MODULE_NAME ": setsockopt tcp_nodelay setting error = %d\n", error);
     sock_release(sock);
