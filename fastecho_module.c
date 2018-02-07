@@ -119,7 +119,7 @@ static int open_listen(struct socket **result){
   //listen
   error = kernel_listen(sock, DEFAULT_BACKLOG);
   if(error < 0){
-    printk(KERN_ERR MODULE_NAME ": socket bind error = %d\n", error);
+    printk(KERN_ERR MODULE_NAME ": socket listen error = %d\n", error);
     sock_release(sock);
     return error;
   }
