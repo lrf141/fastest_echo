@@ -107,7 +107,7 @@ static int echo_server_worker(void *arg){
     }
   }
 
-  kernel_sock_shutdown(socketm SHUT_RDWR);
+  kernel_sock_shutdown(sock, SHUT_RDWR);
   sock_release(sock);
   kfree(buf);
   
