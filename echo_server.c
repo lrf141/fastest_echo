@@ -9,10 +9,10 @@ static int get_request(struct socket *sock, char *buf, size_t size){
 
   mm_segment_t oldfs;
   
-  //iov setting
-  struct iovec iov;
-  iov.iov_base = (void *)buf;
-  iov.iov_len = size;
+  //kvec setting
+  struct kvec vec;
+  vec.iov_len = size;
+  vec.iov_base = buf;
 
   //msghdr setting
   struct msghdr msg;
@@ -28,9 +28,11 @@ static int get_request(struct socket *sock, char *buf, size_t size){
 
   printk(MODULE_NAME ": start get response\n");
   //get msg
-  int length = sock_recvmsg(sock, &msg, size);
+  int length = kernel_recvmsg(sock, &msg, &vec, size, size, msg.msg_flags);
 
   set_fs(oldfs);
+
+  printk(MODULE_NAME ": get request = %s\n", buf);
 
   return length;
 }
@@ -39,7 +41,7 @@ static int send_request(struct socket *sock, char *buf, size_t size){
 
   mm_segment_t oldfs;
   
-  struct iovec iov;
+  struct kvec vec;
   
   struct msghdr msg;
   msg.msg_name = 0;
@@ -56,10 +58,10 @@ static int send_request(struct socket *sock, char *buf, size_t size){
 
   while(done < size){
 
-    iov.iov_base = (void *)((char *)buf + done);
-    iov.iov_len = size - done;
+    vec.iov_base = (void *)((char *)buf + done);
+    vec.iov_len = size - done;
     
-    length = sock_sendmsg(sock, &msg);
+    length = kernel_sendmsg(sock, &msg, &vec, size, size);
     if(length < 0){
       printk(KERN_ERR MODULE_NAME ": write error = %d\n", length);
       break;
