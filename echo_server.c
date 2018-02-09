@@ -55,20 +55,6 @@ static int send_request(struct socket *sock, char *buf, size_t size){
   
   int length;
   int done = 0;
-  /*
-  while(done < size){
-
-    vec.iov_base = (void *)((char *)buf + done);
-    vec.iov_len = size - done;
-    
-    length = kernel_sendmsg(sock, &msg, &vec, size, size);
-    if(length < 0){
-      printk(KERN_ERR MODULE_NAME ": write error = %d\n", length);
-      break;
-    }
-
-    done += length;
-  }*/
 
   vec.iov_base = buf;
   vec.iov_len = size;
