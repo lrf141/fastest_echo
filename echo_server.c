@@ -55,7 +55,7 @@ static int send_request(struct socket *sock, char *buf, size_t size){
   
   int length;
   int done = 0;
-
+  /*
   while(done < size){
 
     vec.iov_base = (void *)((char *)buf + done);
@@ -68,7 +68,11 @@ static int send_request(struct socket *sock, char *buf, size_t size){
     }
 
     done += length;
-  }
+  }*/
+
+  vec.iov_base = buf;
+  vec.iov_len = size;
+  length = kernel_sendmsg(sock, &msg, &vec, 1, strlen(buf));
 
   set_fs(oldfs);
 
