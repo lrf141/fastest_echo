@@ -65,7 +65,7 @@ static void fastecho_cleanup_module(void){
   send_sig(SIGTERM, echo_server, 1);
   kthread_stop(echo_server);
   close_listen(listen_sock);
-  printk(MODULE_NAME ":module unloaded!\n");
+  printk(MODULE_NAME ": module unloaded!\n");
 
 }
 
