@@ -10,7 +10,7 @@ static int get_request(struct socket *sock, char *buf, size_t size){
   mm_segment_t oldfs;
   
   //kvec setting
-  struct kvec vec;
+  struct iovec vec;
   vec.iov_len = size;
   vec.iov_base = buf;
 
@@ -21,6 +21,7 @@ static int get_request(struct socket *sock, char *buf, size_t size){
   msg.msg_control = NULL;
   msg.msg_controllen = 0;
   msg.msg_flags = 0;
+  msg.iov_iter.iov = &vec;
 
   oldfs = get_fs();
   set_fs(KERNEL_DS);
@@ -28,7 +29,8 @@ static int get_request(struct socket *sock, char *buf, size_t size){
 
   printk(MODULE_NAME ": start get response\n");
   //get msg
-  int length = kernel_recvmsg(sock, &msg, &vec, size, size, msg.msg_flags);
+  //int length = kernel_recvmsg(sock, &msg, &vec, size, size, msg.msg_flags);
+  int length = sock_recvmsg(sock, &msg, size);
 
   set_fs(oldfs);
 
