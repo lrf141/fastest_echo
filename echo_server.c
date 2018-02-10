@@ -44,7 +44,7 @@ static int send_request(struct socket *sock, char *buf, size_t size){
   struct kvec vec;
   
   struct msghdr msg;
-  msg.msg_name = 0;
+  msg.msg_name = NULL;
   msg.msg_namelen = 0;
   msg.msg_control = NULL;
   msg.msg_controllen = 0;
