@@ -57,11 +57,11 @@ static int send_request(struct socket *sock, char *buf, size_t size){
   int done = 0;
 
   vec.iov_base = buf;
-  vec.iov_len = size;
+  vec.iov_len = strlen(buf);
 
   printk(MODULE_NAME ": start send request.\n"); 
   
-  length = kernel_sendmsg(sock, &msg, &vec, 0, size);
+  length = kernel_sendmsg(sock, &msg, &vec, 1, strlen(buf)-1);
   
   printk(MODULE_NAME ": send request = %s\n", buf);
   set_fs(oldfs);
