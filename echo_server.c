@@ -57,10 +57,13 @@ static int send_request(struct socket *sock, char *buf, size_t size){
   int done = 0;
 
   vec.iov_base = buf;
-  vec.iov_len = strlen(buf);
-  
-  length = kernel_sendmsg(sock, &msg, &vec, 1, strlen(buf));
+  vec.iov_len = size;
 
+  printk(MODULE_NAME ": start send request.\n"); 
+  
+  length = kernel_sendmsg(sock, &msg, &vec, 0, size);
+  
+  printk(MODULE_NAME ": send request = %s\n", buf);
   set_fs(oldfs);
 
   return done;
@@ -91,7 +94,7 @@ static int echo_server_worker(void *arg){
       break;
     }
 
-    res = send_request(sock, buf, BUF_SIZE-1);
+    res = send_request(sock, buf, strlen(buf));
     if(res < 0){
       printk(KERN_ERR MODULE_NAME ": send request error = %d\n", res);
       break;
