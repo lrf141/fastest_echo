@@ -83,7 +83,7 @@ static int echo_server_worker(void *arg){
 
   int res;
   while(!kthread_should_stop()){
-    res = get_request(sock, buf, BUF_SIZE);
+    res = get_request(sock, buf, BUF_SIZE-1);
     if(res <= 0){
       if(res){
         printk(KERN_ERR MODULE_NAME ": get request error = %d\n", res);
@@ -91,7 +91,7 @@ static int echo_server_worker(void *arg){
       break;
     }
 
-    res = send_request(sock, buf, BUF_SIZE);
+    res = send_request(sock, buf, BUF_SIZE-1);
     if(res < 0){
       printk(KERN_ERR MODULE_NAME ": send request error = %d\n", res);
       break;
