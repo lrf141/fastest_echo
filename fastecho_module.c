@@ -12,10 +12,8 @@
 
 #include "fastecho.h"
 
-
 #define DEFAULT_PORT 8888
 #define DEFAULT_BACKLOG 128
-
 
 //set module info
 MODULE_DESCRIPTION("The fastest echo in kernel module");
@@ -98,7 +96,6 @@ static int open_listen(struct socket **result){
   }
   printk(MODULE_NAME ": setsockopt ok....\n");
 
-  
   //setting sockaddr_in
   memset(&addr, 0, sizeof(addr));
   addr.sin_family = AF_INET;
