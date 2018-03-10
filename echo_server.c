@@ -8,14 +8,15 @@
 static int get_request(struct socket *sock, char *buf, size_t size){
 
   mm_segment_t oldfs;
-  
-  //kvec setting
+  struct msghdr msg;
   struct kvec vec;
+  int length;
+
+  //kvec setting
   vec.iov_len = size;
   vec.iov_base = buf;
 
   //msghdr setting
-  struct msghdr msg;
   msg.msg_name = 0;
   msg.msg_namelen = 0;
   msg.msg_control = NULL;
@@ -28,7 +29,7 @@ static int get_request(struct socket *sock, char *buf, size_t size){
 
   printk(MODULE_NAME ": start get response\n");
   //get msg
-  int length = kernel_recvmsg(sock, &msg, &vec, size, size, msg.msg_flags);
+  length = kernel_recvmsg(sock, &msg, &vec, size, size, msg.msg_flags);
 
   set_fs(oldfs);
 
@@ -40,10 +41,11 @@ static int get_request(struct socket *sock, char *buf, size_t size){
 static int send_request(struct socket *sock, char *buf, size_t size){
 
   mm_segment_t oldfs;
-  
-  struct kvec vec;
-  
+  int length, done = 0;
+  struct kvec vec; 
   struct msghdr msg;
+
+
   msg.msg_name = NULL;
   msg.msg_namelen = 0;
   msg.msg_control = NULL;
@@ -53,9 +55,6 @@ static int send_request(struct socket *sock, char *buf, size_t size){
   oldfs = get_fs();
   set_fs(KERNEL_DS);
   
-  int length;
-  int done = 0;
-
   vec.iov_base = buf;
   vec.iov_len = strlen(buf);
 
@@ -73,6 +72,7 @@ static int echo_server_worker(void *arg){
 
   struct socket *sock;
   unsigned char *buf;
+  int res;
 
   sock = (struct socket *)arg;
   allow_signal(SIGKILL);
@@ -84,7 +84,6 @@ static int echo_server_worker(void *arg){
     return -1;
   }
 
-  int res;
   while(!kthread_should_stop()){
     res = get_request(sock, buf, BUF_SIZE-1);
     if(res <= 0){
