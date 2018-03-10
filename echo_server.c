@@ -23,15 +23,15 @@ static int get_request(struct socket *sock, unsigned char *buf, size_t size){
   msg.msg_controllen = 0;
   msg.msg_flags = 0;
 
-  //oldfs = get_fs();
-  //set_fs(KERNEL_DS);
+  oldfs = get_fs();
+  set_fs(KERNEL_DS);
 
 
   printk(MODULE_NAME ": start get response\n");
   //get msg
   length = kernel_recvmsg(sock, &msg, &vec, size, size, msg.msg_flags);
 
-  //set_fs(oldfs);
+  set_fs(oldfs);
 
   printk(MODULE_NAME ": get request = %s\n", buf);
 
@@ -41,7 +41,7 @@ static int get_request(struct socket *sock, unsigned char *buf, size_t size){
 static int send_request(struct socket *sock, unsigned char *buf, size_t size){
 
   mm_segment_t oldfs;
-  int length, done = 0;
+  int length;
   struct kvec vec; 
   struct msghdr msg;
 
@@ -60,7 +60,7 @@ static int send_request(struct socket *sock, unsigned char *buf, size_t size){
 
   printk(MODULE_NAME ": start send request.\n"); 
   
-  int length = kernel_sendmsg(sock, &msg, &vec, 1, strlen(buf)-1);
+  length = kernel_sendmsg(sock, &msg, &vec, 1, strlen(buf)-1);
   
   printk(MODULE_NAME ": send request = %s\n", buf);
   set_fs(oldfs);
@@ -84,7 +84,6 @@ static int echo_server_worker(void *arg){
     return -1;
   }
 
-  int res;
   while(!kthread_should_stop()){
     res = get_request(sock, buf, BUF_SIZE-1);
     if(res <= 0){
