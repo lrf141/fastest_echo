@@ -7,7 +7,6 @@
 
 static int get_request(struct socket *sock, unsigned char *buf, size_t size){
 
-  mm_segment_t oldfs;
   struct msghdr msg;
   struct kvec vec;
   int length;
@@ -23,15 +22,9 @@ static int get_request(struct socket *sock, unsigned char *buf, size_t size){
   msg.msg_controllen = 0;
   msg.msg_flags = 0;
 
-  oldfs = get_fs();
-  set_fs(KERNEL_DS);
-
-
   printk(MODULE_NAME ": start get response\n");
   //get msg
   length = kernel_recvmsg(sock, &msg, &vec, size, size, msg.msg_flags);
-
-  set_fs(oldfs);
 
   printk(MODULE_NAME ": get request = %s\n", buf);
 
@@ -40,7 +33,6 @@ static int get_request(struct socket *sock, unsigned char *buf, size_t size){
 
 static int send_request(struct socket *sock, unsigned char *buf, size_t size){
 
-  mm_segment_t oldfs;
   int length;
   struct kvec vec; 
   struct msghdr msg;
@@ -52,9 +44,6 @@ static int send_request(struct socket *sock, unsigned char *buf, size_t size){
   msg.msg_controllen = 0;
   msg.msg_flags = 0;
 
-  oldfs = get_fs();
-  set_fs(KERNEL_DS);
-  
   vec.iov_base = buf;
   vec.iov_len = strlen(buf);
 
@@ -63,7 +52,6 @@ static int send_request(struct socket *sock, unsigned char *buf, size_t size){
   length = kernel_sendmsg(sock, &msg, &vec, 1, strlen(buf)-1);
   
   printk(MODULE_NAME ": send request = %s\n", buf);
-  set_fs(oldfs);
 
   return length;
 }
