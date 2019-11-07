@@ -8,7 +8,7 @@ fastecho-objs := $(CFILES:.c=.o)
 
 
 all:
-	make -C $(KERNEL_DIR) SUBDIRS=$(BUILD_DIR) KBUILD_VERBOSE=$(VERBOSE) modules
+	make -C $(KERNEL_DIR) M=$(BUILD_DIR) KBUILD_VERBOSE=$(VERBOSE) modules
 
 clean:
 	rm -f *.o *.ko *.mod.c *.symvers *.order .fastecho*
